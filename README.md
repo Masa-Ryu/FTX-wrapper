@@ -7,7 +7,7 @@ https://docs.ftx.com/
 <br>
 <br>
 ## Usage
-Plese install requirements.txt
+Type `pip install pybotters`
 <br>
 
 ## Special thanks
