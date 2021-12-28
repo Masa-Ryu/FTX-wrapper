@@ -1,5 +1,3 @@
-import asyncio
-
 import pybotters as pb
 
 
@@ -7,9 +5,9 @@ class FTX(object):
     def __init__(self, account_name):
         self._ACCOUNT_NAME = account_name
         self._EXCHANGE_URL = {
-            'REST': 'https://ftx.com/api',
-            'Websocket': 'wss://ftx.com/ws/'
-        }
+                'REST':      'https://ftx.com/api',
+                'Websocket': 'wss://ftx.com/ws/'
+                }
         if self._ACCOUNT_NAME == 'MAIN':
             self._HEADERS_INFORMATION = ''
         else:
@@ -17,8 +15,9 @@ class FTX(object):
 
     async def _requests(self, method=None, path=None, params=None):
         async with pb.Client(
-                apis='apis.json', headers=self._HEADERS_INFORMATION, base_url=self._EXCHANGE_URL['REST']
-        ) as client:
+                apis='apis.json', headers=self._HEADERS_INFORMATION,
+                base_url=self._EXCHANGE_URL['REST']
+                ) as client:
             if method == 'get':
                 resp = await client.get(url=path, params=params)
             elif method == 'post':
@@ -29,18 +28,20 @@ class FTX(object):
                 resp = await client.delete(url=path, data=params)
             elif method == 'ws':
                 ws = await client.ws_connect(
-                    url=self._EXCHANGE_URL['Websocket'],
-                    send_json=params,
-                    hdlr_json=self.handler,
-                )
+                        url=self._EXCHANGE_URL['Websocket'],
+                        send_json=params,
+                        hdlr_json=self.handler,
+                        )
                 await ws
             else:
                 raise Exception('No match method')
             if not method == 'ws':
                 data = await resp.json()
+                # if data['success']:
+                #     return data['result']
                 return data
 
-    # REST API
+    # REST
     async def subaccounts_balances(self, nick_name=None):
         if nick_name is None:
             nick_name = self._ACCOUNT_NAME
@@ -48,9 +49,11 @@ class FTX(object):
         results = await self._requests('get', path)
         return results
 
-    async def transfer_between_subaccounts(self, coin_name, size, to, from_=None):
+    async def transfer_between_subaccounts(
+            self, coin_name, size, to, from_=None
+            ):
         """
-        送金
+        send coin
         :param coin_name: str
         :param size: int
         :param from_: str
@@ -61,11 +64,11 @@ class FTX(object):
             from_ = self._ACCOUNT_NAME
         path = f'/subaccounts/transfer'
         params = {
-            'coin': coin_name,
-            'size': size,
-            'source': from_,
-            'destination': to
-        }
+                'coin':        coin_name,
+                'size':        size,
+                'source':      from_,
+                'destination': to
+                }
         results = await self._requests('post', path, params)
         return results
 
@@ -93,12 +96,14 @@ class FTX(object):
         """
         path = f'/markets/{market_name}/orderbook'
         params = {
-            'depth': depth
-        }
+                'depth': depth
+                }
         results = await self._requests('get', path, params)
         return results
 
-    async def trades(self, market_name, limit=20, start_time=None, end_time=None):
+    async def trades(
+            self, market_name, limit=20, start_time=None, end_time=None
+            ):
         """
 
         :param market_name: str
@@ -109,8 +114,8 @@ class FTX(object):
         """
         path = f'/markets/{market_name}/trades'
         params = {
-            'limit': limit
-        }
+                'limit': limit
+                }
         if start_time is not None:
             params['start_time'] = start_time
         if end_time is not None:
@@ -118,7 +123,9 @@ class FTX(object):
         results = await self._requests('get', path, params)
         return results
 
-    async def historical_prices(self, market_name, resolution, limit, start_time=None, end_time=None):
+    async def historical_prices(
+            self, market_name, resolution, limit, start_time=None, end_time=None
+            ):
         """
         過去の価格と取引量を取得
         :param market_name: str
@@ -130,9 +137,9 @@ class FTX(object):
         """
         path = f'/markets/{market_name}/candles'
         params = {
-            'resolution': resolution,
-            'limit': limit
-        }
+                'resolution': resolution,
+                'limit':      limit
+                }
         if start_time is not None:
             params['start_time'] = start_time
         if end_time is not None:
@@ -185,7 +192,10 @@ class FTX(object):
         results = await self._requests('get', path)
         return results
 
-    async def historical_index(self, index_name, resolution, limit=None, start_time=None, end_time=None):
+    async def historical_index(
+            self, index_name, resolution, limit=None, start_time=None,
+            end_time=None
+            ):
         """
         過去の価格と取引量を取得
         :param index_name: str
@@ -197,8 +207,8 @@ class FTX(object):
         """
         path = f'/indexes/{index_name}/candles'
         params = {
-            'resolution': resolution
-        }
+                'resolution': resolution
+                }
         if limit is not None:
             params['limit'] = limit
         if start_time is not None:
@@ -216,8 +226,8 @@ class FTX(object):
     async def positions(self, show_avg_price=False):
         path = f'/positions'
         params = {
-            'showAvgPrice': show_avg_price
-        }
+                'showAvgPrice': show_avg_price
+                }
         results = await self._requests('get', path, params)
         return results
 
@@ -229,8 +239,8 @@ class FTX(object):
         """
         path = f'/account/leverage'
         params = {
-            'leverage': leverage
-        }
+                'leverage': leverage
+                }
         results = await self._requests('post', path, params)
         return results
 
@@ -261,7 +271,9 @@ class FTX(object):
         results = await self._requests('get', path, params)
         return results
 
-    async def withdrawal_history(self, limit=None, start_time=None, end_time=None):
+    async def withdrawal_history(
+            self, limit=None, start_time=None, end_time=None
+            ):
         path = f'/wallet/withdrawal'
         params = {}
         if limit is not None:
@@ -281,12 +293,14 @@ class FTX(object):
         """
         path = f'/orders'
         params = {
-            'market': market
-        }
+                'market': market
+                }
         results = await self._requests('get', path, params)
         return results
 
-    async def order_history(self, market, start_time=None, end_time=None, limit=None):
+    async def order_history(
+            self, market, start_time=None, end_time=None, limit=None
+            ):
         """
 
         :param market: str
@@ -297,8 +311,8 @@ class FTX(object):
         """
         path = f'/orders/history'
         params = {
-            'market': market
-        }
+                'market': market
+                }
         if limit is not None:
             params['limit'] = limit
         if start_time is not None:
@@ -331,8 +345,9 @@ class FTX(object):
         return results
 
     async def trigger_order_history(
-            self, market=None, start_time=None, end_time=None, side=None, type_=None, order_type=None, limit=100
-    ):
+            self, market=None, start_time=None, end_time=None, side=None,
+            type_=None, order_type=None, limit=100
+            ):
         """
 
         :param market: str
@@ -365,19 +380,20 @@ class FTX(object):
         return results
 
     async def place_order(
-            self, market, side, type_, size, price=None, reduce_only=False, ioc=False, post_only=False, client_id=None
-    ):
+            self, market, side, type_, size, price=None, reduce_only=False,
+            ioc=False, post_only=False, client_id=None
+            ):
         path = f'/orders'
         params = {
-            'market': market,  # BTC-PERP
-            'side': side,  # buy or sell
-            'price': price,  # Send 'None' for market order
-            'type': type_,  # limit or market
-            'size': size,
-            'reduceOnly': reduce_only,
-            'ioc': ioc,
-            'postOnly': post_only
-        }
+                'market':     market,  # BTC-PERP
+                'side':       side,  # buy or sell
+                'price':      price,  # Send 'None' for market order
+                'type':       type_,  # limit or market
+                'size':       size,
+                'reduceOnly': reduce_only,
+                'ioc':        ioc,
+                'postOnly':   post_only
+                }
         if type_ == 'market':
             params['price'] = None
         if client_id is not None:
@@ -386,16 +402,17 @@ class FTX(object):
         return results
 
     async def place_trigger_order(
-            self, market, side, size, type_='stop', reduce_only=None, retry_unit_filled=None,
+            self, market, side, size, type_='stop', reduce_only=None,
+            retry_unit_filled=None,
             trigger_price=None, order_price=None, trail_value=None
-    ):
+            ):
         path = f'/conditional_orders'
         params = {
-            'market': market,
-            'side': side,  # buy or sell
-            'size': size,
-            'type': type_  # stop, trailingStop or takeProfit
-        }
+                'market': market,
+                'side':   side,  # buy or sell
+                'size':   size,
+                'type':   type_  # stop, trailingStop or takeProfit
+                }
         if reduce_only is None:
             params['reduceOnly'] = False
         if type_ == 'stop' or type_ == 'takeProfit':
@@ -418,7 +435,8 @@ class FTX(object):
             if trigger_price is None:
                 raise TypeError('trail_value is None')
             else:
-                params['trailValue'] = trail_value  # negative(-) for 'sell', positive(+) for 'buy'
+                params[
+                    'trailValue'] = trail_value  # (-) for 'sell', (+) for 'buy'
         results = await self._requests('post', path, params)
         return results
 
@@ -462,18 +480,18 @@ class FTX(object):
        """
         path = f'/otc/quotes'
         params = {
-            'fromCoin': from_coin,
-            'toCoin': to_coin,
-            'size': size
-        }
+                'fromCoin': from_coin,
+                'toCoin':   to_coin,
+                'size':     size
+                }
         results = await self._requests('post', path, params)
         return results
 
     async def quote_status(self, quote_id, market):
         path = f'/otc/quotes/{quote_id}'
         params = {
-            'market': market
-        }
+                'market': market
+                }
         results = await self._requests('get', path, params)
         return results
 
@@ -505,8 +523,8 @@ class FTX(object):
     async def market_info(self, market):
         path = f'/spot_margin/market_info'
         params = {
-            'market': market
-        }
+                'market': market
+                }
         results = await self._requests('get', path, params)
         return results
 
@@ -538,10 +556,10 @@ class FTX(object):
     async def funding_payments(self, start_time, end_time, future):
         path = f'/funding_payments'
         params = {
-            'start_time': start_time,
-            'end_time': end_time,
-            'future': future
-        }
+                'start_time': start_time,
+                'end_time':   end_time,
+                'future':     future
+                }
         results = await self._requests('get', path, params)
         return results
 
@@ -568,8 +586,8 @@ class FTX(object):
     async def request_leverage_token_creation(self, token_name, size):
         path = f'/lt/{token_name}/create'
         params = {
-            'size': size
-        }
+                'size': size
+                }
         results = await self._requests('post', path, params)
         return results
 
@@ -581,8 +599,8 @@ class FTX(object):
     async def request_leverage_token_redemption(self, token_name, size):
         path = f'/lt/{token_name}/redeem'
         params = {
-            'size': size
-        }
+                'size': size
+                }
         results = await self._requests('post', path, params)
         return results
 
@@ -652,9 +670,9 @@ class FTX(object):
     async def post_unstake_request(self, coin, size):
         path = f'/staking/unstake_requests'
         params = {
-            'coin': coin,
-            'size': size
-        }
+                'coin': coin,
+                'size': size
+                }
         results = await self._requests('post', path, params)
         return results
 
@@ -671,9 +689,9 @@ class FTX(object):
     async def stake_request(self, coin, size):
         path = f'/srm_stakes/stakes'
         params = {
-            'coin': coin,
-            'size': size
-        }
+                'coin': coin,
+                'size': size
+                }
         results = await self._requests('post', path, params)
         return results
 
@@ -686,27 +704,10 @@ class FTX(object):
         :param market_name: str # e.g.)BTC-PERP
         :return:
         """
-        params = {'op': subscribe, 'channel': channel_name, 'market': market_name}
+        params = {
+                'op': subscribe, 'channel': channel_name, 'market': market_name
+                }
         await self._requests(method='ws', params=params)
 
     async def handler(self, msg, *ws):
         return msg
-
-
-async def debug():
-    ftx = FTX('BOT_04')  # Todo: Your sub-account name
-    # get method
-    # print(await ftx.trades('ETH-PERP'))
-    # print(await ftx.account())
-    # print(await ftx.positions())
-    # print(await ftx.account_options_info())
-    # print(await ftx.subaccounts_balances())
-    # post method
-    # print(await ftx.change_leverage(1))
-    # subscribe
-    # await ftx.ws('unsubscribe', 'ticker', 'BTC-PERP')
-    await ftx.ws('subscribe', 'trades', 'BTC-PERP')
-
-
-if __name__ == '__main__':
-    asyncio.run(debug())
