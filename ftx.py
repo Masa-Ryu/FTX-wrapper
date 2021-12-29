@@ -2,7 +2,7 @@ import pybotters as pb
 
 
 class FTX(object):
-    def __init__(self, account_name):
+    def __init__(self, account_name, api_file=None):
         self._ACCOUNT_NAME = account_name
         self._EXCHANGE_URL = {
                 'REST':      'https://ftx.com/api',
@@ -12,10 +12,14 @@ class FTX(object):
             self._HEADERS_INFORMATION = ''
         else:
             self._HEADERS_INFORMATION = {'FTX-SUBACCOUNT': self._ACCOUNT_NAME}
+        if api_file is None:
+            self.api_file = 'apis.json'
+        else:
+            self.api_file = api_file
 
     async def _requests(self, method=None, path=None, params=None):
         async with pb.Client(
-                apis='apis.json', headers=self._HEADERS_INFORMATION,
+                apis=self.api_file, headers=self._HEADERS_INFORMATION,
                 base_url=self._EXCHANGE_URL['REST']
                 ) as client:
             if method == 'get':
