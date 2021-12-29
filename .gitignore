@@ -133,3 +133,4 @@ dmypy.json
 .idea/
 api.json
 apis.json
+debug.py
