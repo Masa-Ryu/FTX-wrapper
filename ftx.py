@@ -303,11 +303,12 @@ class FTX(object):
         return results
 
     async def order_history(
-            self, market, start_time=None, end_time=None, limit=None
+            self, market, side=None, start_time=None, end_time=None, limit=None
             ):
         """
 
         :param market: str
+        :param side: str
         :param start_time: int
         :param end_time: int
         :param limit: int # max 5000
@@ -317,6 +318,8 @@ class FTX(object):
         params = {
                 'market': market
                 }
+        if side is not None:
+            params['side'] = side
         if limit is not None:
             params['limit'] = limit
         if start_time is not None:
@@ -444,7 +447,7 @@ class FTX(object):
         results = await self._requests('post', path, params)
         return results
 
-    async def order_stats(self, order_id):
+    async def order_status(self, order_id):
         path = f'/orders/{order_id}'
         results = await self._requests('get', path)
         return results
@@ -705,7 +708,7 @@ class FTX(object):
 
         :param subscribe: str # subscribe, unsubscribe
         :param channel_name: str # orderbook, trades, ticker
-        :param market_name: str # e.g.)BTC-PERP
+        :param market_name: str # e.g. BTC-PERP
         :return:
         """
         params = {
