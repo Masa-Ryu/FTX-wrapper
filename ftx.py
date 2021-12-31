@@ -41,11 +41,17 @@ class FTX(object):
                 raise Exception('No match method')
             if not method == 'ws':
                 data = await resp.json()
-                # if data['success']:
-                #     return data['result']
+
                 return data
 
     # REST
+    @staticmethod
+    def optimise_data(data):
+        if data['success']:
+            return data['result']
+        print(data)
+        return data
+
     async def subaccounts_balances(self, nick_name=None):
         if nick_name is None:
             nick_name = self._ACCOUNT_NAME
