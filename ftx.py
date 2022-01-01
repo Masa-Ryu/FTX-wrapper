@@ -17,7 +17,9 @@ class FTX(object):
         else:
             self.api_file = api_file
 
-    async def _requests(self, method=None, path=None, params=None):
+    async def _requests(
+            self, method=None, path=None, params=None, optimise=True
+            ):
         async with pb.Client(
                 apis=self.api_file, headers=self._HEADERS_INFORMATION,
                 base_url=self._EXCHANGE_URL['REST']
@@ -41,7 +43,8 @@ class FTX(object):
                 raise Exception('No match method')
             if not method == 'ws':
                 data = await resp.json()
-
+                if optimise:
+                    data = self.optimise_data(data)
                 return data
 
     # REST
