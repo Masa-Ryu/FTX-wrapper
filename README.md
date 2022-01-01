@@ -1,4 +1,4 @@
-# FTX wrraper
+# FTX wrapper
 For crypto currency botter.  
 
 API Documents  
