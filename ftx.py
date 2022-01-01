@@ -236,12 +236,9 @@ class FTX(object):
         results = await self._requests('get', path, None, optimise)
         return results
 
-    async def positions(self, show_avg_price=False):
+    async def positions(self):
         path = f'/positions'
-        params = {
-                'showAvgPrice': show_avg_price
-                }
-        results = await self._requests('get', path, params)
+        results = await self._requests('get', path)
         return results
 
     async def change_leverage(self, leverage):
