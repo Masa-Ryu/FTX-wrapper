@@ -486,7 +486,7 @@ class FTX(object):
     async def fills(self, market):
         path = '/fills'
         params = {
-                {'market': market}
+                'market': market
                 }
         results = await self._requests('get', path, params)
         return results
