@@ -1,4 +1,4 @@
-from FTXwraper.ftx import FTX
+from FTXwrapper.ftx import FTX
 
 
 class FTXMethods(FTX):
@@ -6,7 +6,7 @@ class FTXMethods(FTX):
         super().__init__(account_name, api_file)
 
     async def authentication(self):
-        res = await self.account_information()
+        res = await self.account_information(False)
         return res['success']
 
     async def get_price(self, market: str, side: str) -> float:

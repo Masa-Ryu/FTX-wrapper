@@ -231,9 +231,9 @@ class FTX(object):
         results = await self._requests('get', path, params)
         return results
 
-    async def account_information(self):
+    async def account_information(self, optimise=True):
         path = f'/account'
-        results = await self._requests('get', path)
+        results = await self._requests('get', path, None, optimise)
         return results
 
     async def positions(self, show_avg_price=False):
