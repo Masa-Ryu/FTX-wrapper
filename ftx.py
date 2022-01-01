@@ -486,6 +486,14 @@ class FTX(object):
         results = await self._requests('delete', path)
         return results
 
+    async def fills(self, market):
+        path = '/fills'
+        params = {
+                {'market': market}
+                }
+        results = await self._requests('get', path, params)
+        return results
+
     async def request_quote(self, from_coin, to_coin, size):
         """
        通貨の変換
