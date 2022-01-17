@@ -34,5 +34,4 @@ class FTXMethods(FTX):
         for _ in balance:
             if _['coin'] == market:
                 return _['free'], _['usdValue']
-            else:
-                return 0, 0
+        return 0, 0
