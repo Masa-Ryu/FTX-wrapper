@@ -22,11 +22,12 @@ class FTXMethods(FTX):
 
     async def get_position(self, market: str):
         res = await self.positions()
-        for _ in res:
-            if _['future'] == market:
-                position_size = _['netSize']
-                liquidation_price = 0 if _['estimatedLiquidationPrice'] is None else _['estimatedLiquidationPrice']
-                return position_size, liquidation_price
+        if type(res) == list:
+            for _ in res:
+                if _['future'] == market:
+                    position_size = _['netSize']
+                    liquidation_price = 0 if _['estimatedLiquidationPrice'] is None else _['estimatedLiquidationPrice']
+                    return position_size, liquidation_price
         return 0, 0
 
     async def get_free_balance(self, market: str):
